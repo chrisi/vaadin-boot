@@ -1,12 +1,13 @@
 package net.gtidev.test;
 
+import com.vaadin.annotations.DesignRoot;
+import com.vaadin.ui.declarative.Design;
 import net.gtidev.test.dbaccess.CustomerRepository;
 import net.gtidev.test.model.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
@@ -17,6 +18,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SpringComponent
 @UIScope
+@DesignRoot
 public class CustomerEditor extends VerticalLayout {
 
   private final CustomerRepository repository;
@@ -27,20 +29,19 @@ public class CustomerEditor extends VerticalLayout {
   private Customer customer;
 
   /* Fields to edit properties in Customer entity */
-  TextField firstName = new TextField("First name");
-  TextField lastName = new TextField("Last name");
+  TextField firstName;
 
   /* Action buttons */
-  Button save = new Button("Save", FontAwesome.SAVE);
-  Button cancel = new Button("Cancel");
-  Button delete = new Button("Delete", FontAwesome.TRASH_O);
-  CssLayout actions = new CssLayout(save, cancel, delete);
+  Button save;
+  Button cancel;
+  Button delete;
+  CssLayout actions;
 
   @Autowired
   public CustomerEditor(CustomerRepository repository) {
     this.repository = repository;
 
-    addComponents(firstName, lastName, actions);
+    Design.read("CustomerEditor.html",this);
 
     // Configure and style components
     setSpacing(true);

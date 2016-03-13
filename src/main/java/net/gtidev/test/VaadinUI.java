@@ -3,6 +3,7 @@ package net.gtidev.test;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
@@ -34,11 +35,45 @@ public class VaadinUI extends UI {
     this.addNewBtn = new Button("New customer", FontAwesome.PLUS);
   }
 
+  private MenuBar initMennu() {
+
+    MenuBar barmenu = new MenuBar();
+
+    // Define a common menu command for all the menu items.
+    MenuBar.Command mycommand = (MenuBar.Command) selectedItem -> {
+    };
+
+    // A top-level menu item that opens a submenu
+    MenuBar.MenuItem drinks = barmenu.addItem("Beverages", null, null);
+
+// Submenu item with a sub-submenu
+    MenuBar.MenuItem hots = drinks.addItem("Hot", null, null);
+    hots.addItem("Tea", /* new ThemeResource("icons/tea-16px.png") */ null, mycommand);
+    hots.addItem("Coffee",/* new ThemeResource("icons/coffee-16px.png") */ null, mycommand);
+
+// Another submenu item with a sub-submenu
+    MenuBar.MenuItem colds = drinks.addItem("Cold", null, null);
+    colds.addItem("Milk", null, mycommand);
+    colds.addItem("Weissbier", null, mycommand);
+
+// Another top-level item
+    MenuBar.MenuItem snacks = barmenu.addItem("Snacks", null, null);
+    snacks.addItem("Weisswurst", null, mycommand);
+    snacks.addItem("Bratwurst", null, mycommand);
+    snacks.addItem("Currywurst", null, mycommand);
+
+// Yet another top-level item
+    MenuBar.MenuItem servs = barmenu.addItem("Services", null, null);
+    servs.addItem("Car Service", null, mycommand);
+
+    return barmenu;
+  }
+
   @Override
   protected void init(VaadinRequest request) {
     // build layout
     HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
-    VerticalLayout mainLayout = new VerticalLayout(actions, grid, editor);
+    VerticalLayout mainLayout = new VerticalLayout(initMennu(), actions, grid, editor);
     setContent(mainLayout);
 
     // Configure layouts and components
