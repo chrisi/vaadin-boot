@@ -30,6 +30,7 @@ public class CustomerEditor extends VerticalLayout {
 
   /* Fields to edit properties in Customer entity */
   TextField firstName;
+  TextField lastName;
 
   /* Action buttons */
   Button save;

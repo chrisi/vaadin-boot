@@ -2,18 +2,23 @@ package net.gtidev.test;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 import net.gtidev.test.dbaccess.CustomerRepository;
 import net.gtidev.test.model.Customer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 @SpringUI
-@Theme("valo")
+//@Theme("tests-valo-metro")
+@Theme("tests-valo-reindeer")
 public class VaadinUI extends UI {
 
   private final CustomerRepository repo;
@@ -25,6 +30,12 @@ public class VaadinUI extends UI {
   private final TextField filter;
 
   private final Button addNewBtn;
+
+  private final ValoMenuLayout root = new ValoMenuLayout();
+  private Navigator navigator;
+  private final LinkedHashMap<String, String> menuItems = new LinkedHashMap<>();
+  private CssLayout menu = new CssLayout();
+  private CssLayout menuItemsLayout = new CssLayout();
 
   @Autowired
   public VaadinUI(CustomerRepository repo, CustomerEditor editor) {
@@ -38,6 +49,8 @@ public class VaadinUI extends UI {
   private MenuBar initMennu() {
 
     MenuBar barmenu = new MenuBar();
+    barmenu.setWidth("100%");
+
 
     // Define a common menu command for all the menu items.
     MenuBar.Command mycommand = (MenuBar.Command) selectedItem -> {
@@ -72,9 +85,16 @@ public class VaadinUI extends UI {
   @Override
   protected void init(VaadinRequest request) {
     // build layout
+
     HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
-    VerticalLayout mainLayout = new VerticalLayout(initMennu(), actions, grid, editor);
-    setContent(mainLayout);
+    VerticalLayout mainLayout = new VerticalLayout(actions, grid, editor);
+    //VerticalLayout wrapper = new VerticalLayout(initMennu(), mainLayout);
+
+    setContent(root);
+    root.setWidth("100%");
+    root.addMenu(buildMenu());
+    addStyleName(ValoTheme.UI_WITH_MENU);
+
 
     // Configure layouts and components
     actions.setSpacing(true);
@@ -111,6 +131,32 @@ public class VaadinUI extends UI {
 
     // Initialize listing
     listCustomers(null);
+  }
+
+  private CssLayout buildMenu() {
+    // Add items
+    menuItems.put("common", "Common UI Elements");
+    menuItems.put("labels", "Labels");
+    menuItems.put("buttons-and-links", "Buttons & Links");
+    menuItems.put("textfields", "Text Fields");
+    menuItems.put("datefields", "Date Fields");
+    menuItems.put("comboboxes", "Combo Boxes");
+
+    menuItemsLayout.setPrimaryStyleName("valo-menuitems");
+    menu.addComponent(menuItemsLayout);
+    for (final Map.Entry<String, String> item : menuItems.entrySet()) {
+      final Button b = new Button(item.getValue(), new Button.ClickListener() {
+        @Override
+        public void buttonClick(final Button.ClickEvent event) {
+          navigator.navigateTo(item.getKey());
+        }
+      });
+      b.setHtmlContentAllowed(true);
+      b.setPrimaryStyleName("valo-menu-item");
+      menuItemsLayout.addComponent(b);
+    }
+
+    return menu;
   }
 
   // tag::listCustomers[]

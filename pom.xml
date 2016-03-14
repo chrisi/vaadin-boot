@@ -70,12 +70,32 @@
 
   <build>
     <plugins>
+
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
+
+      <!--<plugin>-->
+      <!--<groupId>com.vaadin</groupId>-->
+      <!--<artifactId>vaadin-maven-plugin</artifactId>-->
+      <!--<executions>-->
+      <!--<execution>-->
+      <!--<goals>-->
+      <!--<goal>update-theme</goal>-->
+      <!--<goal>compile-theme</goal>-->
+      <!--&lt;!&ndash;-->
+      <!--<goal>clean</goal>-->
+      <!--<goal>resources</goal>-->
+      <!--<goal>update-widgetset</goal>-->
+      <!--<goal>compile</goal>-->
+      <!--&ndash;&gt;-->
+      <!--</goals>-->
+      <!--</execution>-->
+      <!--</executions>-->
+      <!--</plugin>-->
+
     </plugins>
   </build>
-
 
 </project>
