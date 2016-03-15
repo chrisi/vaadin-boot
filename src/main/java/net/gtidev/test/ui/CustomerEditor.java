@@ -1,4 +1,4 @@
-package net.gtidev.test;
+package net.gtidev.test.ui;
 
 import com.vaadin.annotations.DesignRoot;
 import com.vaadin.ui.declarative.Design;
