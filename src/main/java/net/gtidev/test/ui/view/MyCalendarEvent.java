@@ -17,7 +17,7 @@ package net.gtidev.test.ui.view;
 
 import com.vaadin.ui.components.calendar.event.BasicEvent;
 
-public class CalendarEvent extends BasicEvent {
+public class MyCalendarEvent extends BasicEvent {
 
   private static final long serialVersionUID = 2820133201983036866L;
   private String where;
