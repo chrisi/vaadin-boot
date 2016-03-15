@@ -18,6 +18,8 @@ import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.ui.components.calendar.handler.BasicDateClickHandler;
 import com.vaadin.ui.components.calendar.handler.BasicWeekClickHandler;
 import com.vaadin.ui.themes.ValoTheme;
+import net.gtidev.test.CalendarEventManager;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.text.DateFormatSymbols;
@@ -29,6 +31,19 @@ import java.util.TimeZone;
 @SpringView
 public class CalendarView extends GridLayout implements View {
 
+  /**
+   * This Gregorian calendar is used to control dates and time inside of this
+   * test application.
+   */
+  @Autowired
+  private GregorianCalendar calendar;
+
+  @Autowired
+  private BasicEventProvider dataSource;
+
+  @Autowired
+  private CalendarEventManager calendarEventManager;
+
   private static final long serialVersionUID = -5436777475398410597L;
 
   private static final String DEFAULT_ITEMID = "DEFAULT";
@@ -36,12 +51,6 @@ public class CalendarView extends GridLayout implements View {
   private enum Mode {
     MONTH, WEEK, DAY;
   }
-
-  /**
-   * This Gregorian calendar is used to control dates and time inside of this
-   * test application.
-   */
-  private GregorianCalendar calendar;
 
   /**
    * Target calendar component that this test application is made for.
@@ -85,17 +94,7 @@ public class CalendarView extends GridLayout implements View {
 
   private Mode viewMode = Mode.WEEK;
 
-  private BasicEventProvider dataSource;
-
   private Button addNewEvent;
-
-  /*
-   * When testBench is set to true, CalendarTest will have static content that
-   * is more suitable for Vaadin TestBench testing. Calendar will use a static
-   * date Mon 10 Jan 2000. Enable by starting the application with a
-   * "testBench" parameter in the URL.
-   */
-  private boolean testBench = false;
 
   private String calendarHeight = null;
 
@@ -136,99 +135,6 @@ public class CalendarView extends GridLayout implements View {
 
     initCalendar();
     initLayoutContent();
-    addInitialEvents();
-  }
-
-  private Date resolveFirstDateOfWeek(Date today, java.util.Calendar currentCalendar) {
-    int firstDayOfWeek = currentCalendar.getFirstDayOfWeek();
-    currentCalendar.setTime(today);
-    while (firstDayOfWeek != currentCalendar.get(java.util.Calendar.DAY_OF_WEEK)) {
-      currentCalendar.add(java.util.Calendar.DATE, -1);
-    }
-    return currentCalendar.getTime();
-  }
-
-  private Date resolveLastDateOfWeek(Date today, java.util.Calendar currentCalendar) {
-    currentCalendar.setTime(today);
-    currentCalendar.add(java.util.Calendar.DATE, 1);
-    int firstDayOfWeek = currentCalendar.getFirstDayOfWeek();
-    // Roll to weeks last day using firstdayofweek. Roll until FDofW is
-    // found and then roll back one day.
-    while (firstDayOfWeek != currentCalendar.get(java.util.Calendar.DAY_OF_WEEK)) {
-      currentCalendar.add(java.util.Calendar.DATE, 1);
-    }
-    currentCalendar.add(java.util.Calendar.DATE, -1);
-    return currentCalendar.getTime();
-  }
-
-  private void addInitialEvents() {
-    Date originalDate = calendar.getTime();
-    Date today = getToday();
-
-    // Add a event that last a whole week
-
-    Date start = resolveFirstDateOfWeek(today, calendar);
-    Date end = resolveLastDateOfWeek(today, calendar);
-    MyCalendarEvent event = getNewEvent("Whole week event", start, end);
-    event.setAllDay(true);
-    event.setStyleName("color4");
-    event.setDescription("Description for the whole week event.");
-    dataSource.addEvent(event);
-
-    // Add a allday event
-    calendar.setTime(start);
-    calendar.add(GregorianCalendar.DATE, 3);
-    start = calendar.getTime();
-    end = start;
-    event = getNewEvent("All-day event", start, end);
-    event.setAllDay(true);
-    event.setDescription("Some description.");
-    event.setStyleName("color3");
-    dataSource.addEvent(event);
-
-    // Add a second allday event
-    calendar.add(GregorianCalendar.DATE, 1);
-    start = calendar.getTime();
-    end = start;
-    event = getNewEvent("Second all-day event", start, end);
-    event.setAllDay(true);
-    event.setDescription("Some description.");
-    event.setStyleName("color2");
-    dataSource.addEvent(event);
-
-    calendar.add(GregorianCalendar.DATE, -3);
-    calendar.set(GregorianCalendar.HOUR_OF_DAY, 9);
-    calendar.set(GregorianCalendar.MINUTE, 30);
-    start = calendar.getTime();
-    calendar.add(GregorianCalendar.HOUR_OF_DAY, 5);
-    calendar.set(GregorianCalendar.MINUTE, 0);
-    end = calendar.getTime();
-    event = getNewEvent("Appointment", start, end);
-    event.setWhere("Office");
-    event.setStyleName("color1");
-    event.setDescription("A longer description, which should display correctly.");
-    dataSource.addEvent(event);
-
-    calendar.add(GregorianCalendar.DATE, 1);
-    calendar.set(GregorianCalendar.HOUR_OF_DAY, 11);
-    calendar.set(GregorianCalendar.MINUTE, 0);
-    start = calendar.getTime();
-    calendar.add(GregorianCalendar.HOUR_OF_DAY, 8);
-    end = calendar.getTime();
-    event = getNewEvent("Training", start, end);
-    event.setStyleName("color2");
-    dataSource.addEvent(event);
-
-    calendar.add(GregorianCalendar.DATE, 4);
-    calendar.set(GregorianCalendar.HOUR_OF_DAY, 9);
-    calendar.set(GregorianCalendar.MINUTE, 0);
-    start = calendar.getTime();
-    calendar.add(GregorianCalendar.HOUR_OF_DAY, 9);
-    end = calendar.getTime();
-    event = getNewEvent("Free time", start, end);
-    dataSource.addEvent(event);
-
-    calendar.setTime(originalDate);
   }
 
   private void initLayoutContent() {
@@ -408,7 +314,7 @@ public class CalendarView extends GridLayout implements View {
 
       @Override
       public void buttonClick(Button.ClickEvent event) {
-        Date start = getToday();
+        Date start = new Date();
         start.setHours(0);
         start.setMinutes(0);
         start.setSeconds(0);
@@ -520,8 +426,6 @@ public class CalendarView extends GridLayout implements View {
   }
 
   private void initCalendar() {
-    dataSource = new BasicEventProvider();
-
     calendarComponent = new Calendar(dataSource);
     calendarComponent.setLocale(getLocale());
     calendarComponent.setImmediate(true);
@@ -547,7 +451,7 @@ public class CalendarView extends GridLayout implements View {
       calendarComponent.setLastVisibleDayOfWeek(lastDay);
     }
 
-    Date today = getToday();
+    Date today = new Date();
     calendar = new GregorianCalendar(getLocale());
     calendar.setTime(today);
     calendarComponent.getInternalCalendar().setTime(today);
@@ -573,21 +477,6 @@ public class CalendarView extends GridLayout implements View {
     }
 
     addCalendarEventListeners();
-  }
-
-  private Date getToday() {
-    if (testBench) {
-      GregorianCalendar testDate = new GregorianCalendar();
-      testDate.set(GregorianCalendar.YEAR, 2000);
-      testDate.set(GregorianCalendar.MONTH, 0);
-      testDate.set(GregorianCalendar.DATE, 10);
-      testDate.set(GregorianCalendar.HOUR_OF_DAY, 0);
-      testDate.set(GregorianCalendar.MINUTE, 0);
-      testDate.set(GregorianCalendar.SECOND, 0);
-      testDate.set(GregorianCalendar.MILLISECOND, 0);
-      return testDate.getTime();
-    }
-    return new Date();
   }
 
   @SuppressWarnings("serial")
@@ -639,12 +528,7 @@ public class CalendarView extends GridLayout implements View {
         i.getItemProperty("caption").setValue(id);
       }
     }
-
-    if (testBench) {
-      s.select("America/New_York");
-    } else {
-      s.select(DEFAULT_ITEMID);
-    }
+    s.select("DEFAULT");
     s.setImmediate(true);
     s.addValueChangeListener(new Property.ValueChangeListener() {
       private static final long serialVersionUID = 1L;
@@ -1044,14 +928,6 @@ public class CalendarView extends GridLayout implements View {
     captionLabel.setValue(month + " " + calendar.get(GregorianCalendar.YEAR));
   }
 
-  private MyCalendarEvent getNewEvent(String caption, Date start, Date end) {
-    MyCalendarEvent event = new MyCalendarEvent();
-    event.setCaption(caption);
-    event.setStart(start);
-    event.setEnd(end);
-    return event;
-  }
-
   /*
    * Switch the view to week view.
    */
@@ -1082,7 +958,7 @@ public class CalendarView extends GridLayout implements View {
 
     calendarComponent.setEndDate(calendar.getTime());
 
-    calendar.setTime(getToday());
+    calendar.setTime(new Date());
     // resetCalendarTime(true);
   }
 

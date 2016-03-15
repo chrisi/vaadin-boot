@@ -80,6 +80,8 @@ public class VaadinUI extends UI {
       }
     });
 
+    menu.setWidth("240px");
+
     setNavigator(navigator); // wozu das, war in der demo nicht drin, ging aber trotzdem...
   }
 
@@ -97,6 +99,7 @@ public class VaadinUI extends UI {
 
     menuItems.put("index", "Index Page");
     menuItems.put("calendar", "Calendar Page");
+    menuItems.put("simpleCal", "Simple Calendar");
     menuItems.put("address", "Address Page");
     menuItems.put("foo", "Foo Page");
     menuItems.put("bar", "Bar Page");
