@@ -1,10 +1,12 @@
 package net.gtidev.test.ui;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.data.Property;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
@@ -18,28 +20,30 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @SpringUI
+@Theme("tests-valo")
 //@Theme("tests-valo-metro")
-@Theme("tests-valo-reindeer")
+//@Theme("tests-valo-reindeer")
 public class VaadinUI extends UI {
 
   @Autowired
   private SpringViewProvider viewProvider;
 
-  private final ValoMenuLayout root = new ValoMenuLayout();
-  private final ComponentContainer viewDisplay = root.getContentContainer();
-  private final Navigator navigator = new Navigator(this, viewDisplay);
-  private final LinkedHashMap<String, String> menuItems = new LinkedHashMap<>();
   private final CssLayout menu = new CssLayout();
   private final CssLayout menuItemsLayout = new CssLayout();
+  private final LinkedHashMap<String, String> menuItems = new LinkedHashMap<>();
 
   @Override
   protected void init(VaadinRequest request) {
+    ValoMenuLayout root = new ValoMenuLayout();
+    Navigator navigator = new Navigator(this, root.getContentContainer());
+
     setContent(root);
+
     root.setWidth("100%");
-    root.addMenu(buildMenu());
+    root.addMenu(buildMenu(navigator));
     addStyleName(ValoTheme.UI_WITH_MENU);
 
-    navigator.addProvider(viewProvider);
+    navigator.addProvider(viewProvider); // fuer die SpringViews
     navigator.addView("index", IndexView.class);
     navigator.addView("foo", FooView.class);
     navigator.addView("bar", BarView.class);
@@ -76,11 +80,21 @@ public class VaadinUI extends UI {
       }
     });
 
-    setNavigator(navigator); // wozu dass, war in der demo nicht drin, ging aber trotzdem...
+    setNavigator(navigator); // wozu das, war in der demo nicht drin, ging aber trotzdem...
   }
 
-  private CssLayout buildMenu() {
-    // Add items
+  private CssLayout buildMenu(Navigator navigator) {
+
+    final HorizontalLayout top = new HorizontalLayout();
+    top.setWidth("100%");
+    top.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+    top.addStyleName("valo-menu-title");
+    final Label title = new Label("<h3>DigiTron <strong>Online</strong></h3>", ContentMode.HTML);
+    title.setSizeUndefined();
+    top.addComponent(title);
+    top.setExpandRatio(title, 1);
+    menu.addComponent(top);
+
     menuItems.put("index", "Index Page");
     menuItems.put("address", "Address Page");
     menuItems.put("foo", "Foo Page");
@@ -97,7 +111,30 @@ public class VaadinUI extends UI {
       menuItemsLayout.addComponent(b);
     }
 
+    menu.addComponent(createThemeSelect());
+
     return menu;
+  }
+
+  private Component createThemeSelect() {
+    LinkedHashMap<String, String> themeVariants = new LinkedHashMap<>();
+
+    themeVariants.put("tests-valo", "Default");
+    themeVariants.put("tests-valo-metro", "Metro");
+    themeVariants.put("tests-valo-reindeer", "Migrate Reindeer");
+
+    final NativeSelect ns = new NativeSelect();
+    ns.setNullSelectionAllowed(false);
+    ns.setId("themeSelect");
+    ns.addContainerProperty("caption", String.class, "");
+    ns.setItemCaptionPropertyId("caption");
+    for (final String identifier : themeVariants.keySet()) {
+      ns.addItem(identifier).getItemProperty("caption").setValue(themeVariants.get(identifier));
+    }
+
+    ns.setValue("tests-valo");
+    ns.addValueChangeListener((Property.ValueChangeListener) event -> setTheme((String) ns.getValue()));
+    return ns;
   }
 
 }
