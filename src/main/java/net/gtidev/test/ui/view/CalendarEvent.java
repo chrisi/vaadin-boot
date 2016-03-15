@@ -13,11 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package net.gtidev.test.ui.calendar;
+package net.gtidev.test.ui.view;
 
 import com.vaadin.ui.components.calendar.event.BasicEvent;
 
-public class CalendarTestEvent extends BasicEvent {
+public class CalendarEvent extends BasicEvent {
 
   private static final long serialVersionUID = 2820133201983036866L;
   private String where;

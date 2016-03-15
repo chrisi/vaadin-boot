@@ -14,11 +14,9 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.event.BasicEvent;
 import com.vaadin.ui.components.calendar.event.BasicEventProvider;
-import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.ui.components.calendar.handler.BasicDateClickHandler;
 import com.vaadin.ui.components.calendar.handler.BasicWeekClickHandler;
 import com.vaadin.ui.themes.ValoTheme;
-import net.gtidev.test.ui.calendar.CalendarTestEvent;
 
 import javax.annotation.PostConstruct;
 import java.text.DateFormatSymbols;
@@ -170,7 +168,7 @@ public class CalendarView extends GridLayout implements View {
 
     Date start = resolveFirstDateOfWeek(today, calendar);
     Date end = resolveLastDateOfWeek(today, calendar);
-    CalendarTestEvent event = getNewEvent("Whole week event", start, end);
+    CalendarEvent event = getNewEvent("Whole week event", start, end);
     event.setAllDay(true);
     event.setStyleName("color4");
     event.setDescription("Description for the whole week event.");
@@ -420,7 +418,7 @@ public class CalendarView extends GridLayout implements View {
     });
   }
 
-  private void initFormFields(Layout formLayout, Class<? extends CalendarEvent> eventClass) {
+  private void initFormFields(Layout formLayout, Class<? extends com.vaadin.ui.components.calendar.event.CalendarEvent> eventClass) {
 
     startDateField = createDateField("Start date");
     endDateField = createDateField("End date");
@@ -461,7 +459,7 @@ public class CalendarView extends GridLayout implements View {
     formLayout.addComponent(allDayField);
     formLayout.addComponent(captionField);
     // captionField.setComponentError(new UserError("Testing error"));
-    if (eventClass == CalendarTestEvent.class) {
+    if (eventClass == CalendarEvent.class) {
       formLayout.addComponent(whereField);
     }
     formLayout.addComponent(descriptionField);
@@ -471,7 +469,7 @@ public class CalendarView extends GridLayout implements View {
     scheduleEventFieldGroup.bind(endDateField, "end");
     scheduleEventFieldGroup.bind(captionField, "caption");
     scheduleEventFieldGroup.bind(descriptionField, "description");
-    if (eventClass == CalendarTestEvent.class) {
+    if (eventClass == CalendarEvent.class) {
       scheduleEventFieldGroup.bind(whereField, "where");
     }
     scheduleEventFieldGroup.bind(styleNameField, "styleName");
@@ -830,7 +828,7 @@ public class CalendarView extends GridLayout implements View {
     showEventPopup(createNewEvent(start, end), true);
   }
 
-  private void showEventPopup(CalendarEvent event, boolean newEvent) {
+  private void showEventPopup(com.vaadin.ui.components.calendar.event.CalendarEvent event, boolean newEvent) {
     if (event == null) {
       return;
     }
@@ -929,8 +927,8 @@ public class CalendarView extends GridLayout implements View {
     applyEventButton.setEnabled(!calendarComponent.isReadOnly());
   }
 
-  private void updateCalendarEventForm(CalendarEvent event) {
-    BeanItem<CalendarEvent> item = new BeanItem<CalendarEvent>(event);
+  private void updateCalendarEventForm(com.vaadin.ui.components.calendar.event.CalendarEvent event) {
+    BeanItem<com.vaadin.ui.components.calendar.event.CalendarEvent> item = new BeanItem<com.vaadin.ui.components.calendar.event.CalendarEvent>(event);
     scheduleEventFieldLayout.removeAllComponents();
     scheduleEventFieldGroup = new FieldGroup();
     initFormFields(scheduleEventFieldLayout, event.getClass());
@@ -945,7 +943,7 @@ public class CalendarView extends GridLayout implements View {
     }
   }
 
-  private CalendarEvent createNewEvent(Date startDate, Date endDate) {
+  private com.vaadin.ui.components.calendar.event.CalendarEvent createNewEvent(Date startDate, Date endDate) {
     BasicEvent event = new BasicEvent();
     event.setCaption("");
     event.setStart(startDate);
@@ -984,8 +982,8 @@ public class CalendarView extends GridLayout implements View {
 
   @SuppressWarnings("unchecked")
   private BasicEvent getFormCalendarEvent() {
-    BeanItem<CalendarEvent> item = (BeanItem<CalendarEvent>) scheduleEventFieldGroup.getItemDataSource();
-    CalendarEvent event = item.getBean();
+    BeanItem<com.vaadin.ui.components.calendar.event.CalendarEvent> item = (BeanItem<com.vaadin.ui.components.calendar.event.CalendarEvent>) scheduleEventFieldGroup.getItemDataSource();
+    com.vaadin.ui.components.calendar.event.CalendarEvent event = item.getBean();
     return (BasicEvent) event;
   }
 
@@ -1046,8 +1044,8 @@ public class CalendarView extends GridLayout implements View {
     captionLabel.setValue(month + " " + calendar.get(GregorianCalendar.YEAR));
   }
 
-  private CalendarTestEvent getNewEvent(String caption, Date start, Date end) {
-    CalendarTestEvent event = new CalendarTestEvent();
+  private CalendarEvent getNewEvent(String caption, Date start, Date end) {
+    CalendarEvent event = new CalendarEvent();
     event.setCaption(caption);
     event.setStart(start);
     event.setEnd(end);
