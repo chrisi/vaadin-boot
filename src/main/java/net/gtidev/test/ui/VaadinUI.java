@@ -96,6 +96,7 @@ public class VaadinUI extends UI {
     menu.addComponent(top);
 
     menuItems.put("index", "Index Page");
+    menuItems.put("calendar", "Calendar Page");
     menuItems.put("address", "Address Page");
     menuItems.put("foo", "Foo Page");
     menuItems.put("bar", "Bar Page");
