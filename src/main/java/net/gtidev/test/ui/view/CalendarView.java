@@ -149,15 +149,13 @@ public class CalendarView extends GridLayout implements View {
     return currentCalendar.getTime();
   }
 
-  private Date resolveLastDateOfWeek(Date today,
-                                     java.util.Calendar currentCalendar) {
+  private Date resolveLastDateOfWeek(Date today, java.util.Calendar currentCalendar) {
     currentCalendar.setTime(today);
     currentCalendar.add(java.util.Calendar.DATE, 1);
     int firstDayOfWeek = currentCalendar.getFirstDayOfWeek();
     // Roll to weeks last day using firstdayofweek. Roll until FDofW is
     // found and then roll back one day.
-    while (firstDayOfWeek != currentCalendar
-            .get(java.util.Calendar.DAY_OF_WEEK)) {
+    while (firstDayOfWeek != currentCalendar.get(java.util.Calendar.DAY_OF_WEEK)) {
       currentCalendar.add(java.util.Calendar.DATE, 1);
     }
     currentCalendar.add(java.util.Calendar.DATE, -1);
@@ -296,7 +294,6 @@ public class CalendarView extends GridLayout implements View {
 
   private void initNavigationButtons() {
     monthButton = new Button("Month", new Button.ClickListener() {
-
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -306,7 +303,6 @@ public class CalendarView extends GridLayout implements View {
     });
 
     weekButton = new Button("Week", new Button.ClickListener() {
-
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -321,7 +317,6 @@ public class CalendarView extends GridLayout implements View {
     });
 
     dayButton = new Button("Day", new Button.ClickListener() {
-
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -397,7 +392,6 @@ public class CalendarView extends GridLayout implements View {
     disabledButton.addStyleName("small");
     disabledButton.setImmediate(true);
     disabledButton.addValueChangeListener(new Property.ValueChangeListener() {
-
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -412,7 +406,6 @@ public class CalendarView extends GridLayout implements View {
     addNewEvent.addStyleName("primary");
     addNewEvent.addStyleName("small");
     addNewEvent.addClickListener(new Button.ClickListener() {
-
       private static final long serialVersionUID = -8307244759142541067L;
 
       @Override
@@ -421,9 +414,7 @@ public class CalendarView extends GridLayout implements View {
         start.setHours(0);
         start.setMinutes(0);
         start.setSeconds(0);
-
         Date end = getEndOfDay(calendar, start);
-
         showEventPopup(createNewEvent(start, end), true);
       }
     });
@@ -436,7 +427,6 @@ public class CalendarView extends GridLayout implements View {
 
     final CheckBox allDayField = createCheckBox("All-day");
     allDayField.addValueChangeListener(new Property.ValueChangeListener() {
-
       private static final long serialVersionUID = -7104996493482558021L;
 
       @Override
@@ -444,7 +434,6 @@ public class CalendarView extends GridLayout implements View {
         Object value = event.getProperty().getValue();
         if (value instanceof Boolean && Boolean.TRUE.equals(value)) {
           setFormDateResolution(Resolution.DAY);
-
         } else {
           setFormDateResolution(Resolution.MINUTE);
         }
@@ -618,12 +607,8 @@ public class CalendarView extends GridLayout implements View {
       }
     });
 
-    calendarComponent.setHandler(new CalendarComponentEvents.EventClickHandler() {
-
-      @Override
-      public void eventClick(CalendarComponentEvents.EventClick event) {
-        showEventPopup(event.getCalendarEvent(), false);
-      }
+    calendarComponent.setHandler((CalendarComponentEvents.EventClickHandler) event -> {
+      showEventPopup(event.getCalendarEvent(), false);
     });
 
     calendarComponent.setHandler(new BasicDateClickHandler() {
@@ -637,13 +622,7 @@ public class CalendarView extends GridLayout implements View {
       }
     });
 
-    calendarComponent.setHandler(new CalendarComponentEvents.RangeSelectHandler() {
-
-      @Override
-      public void rangeSelect(CalendarComponentEvents.RangeSelectEvent event) {
-        handleRangeSelect(event);
-      }
-    });
+    calendarComponent.setHandler((CalendarComponentEvents.RangeSelectHandler) this::handleRangeSelect);
   }
 
   private ComboBox createTimeZoneSelect() {
@@ -655,8 +634,7 @@ public class CalendarView extends GridLayout implements View {
     s.setFilteringMode(FilteringMode.CONTAINS);
 
     Item i = s.addItem(DEFAULT_ITEMID);
-    i.getItemProperty("caption").setValue(
-            "Default (" + TimeZone.getDefault().getID() + ")");
+    i.getItemProperty("caption").setValue("Default (" + TimeZone.getDefault().getID() + ")");
     for (String id : TimeZone.getAvailableIDs()) {
       if (!s.containsId(id)) {
         i = s.addItem(id);
@@ -671,12 +649,10 @@ public class CalendarView extends GridLayout implements View {
     }
     s.setImmediate(true);
     s.addValueChangeListener(new Property.ValueChangeListener() {
-
       private static final long serialVersionUID = 1L;
 
       @Override
       public void valueChange(Property.ValueChangeEvent event) {
-
         updateCalendarTimeZone(event.getProperty().getValue());
       }
     });
@@ -701,7 +677,6 @@ public class CalendarView extends GridLayout implements View {
     s.select(DEFAULT_ITEMID);
     s.setImmediate(true);
     s.addValueChangeListener(new Property.ValueChangeListener() {
-
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -758,9 +733,7 @@ public class CalendarView extends GridLayout implements View {
 
     if (viewMode == Mode.WEEK) {
       calendar.set(java.util.Calendar.WEEK_OF_YEAR, weekNumber);
-      calendar.set(java.util.Calendar.DAY_OF_WEEK,
-              calendar.getFirstDayOfWeek());
-
+      calendar.set(java.util.Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
       calendarComponent.setStartDate(calendar.getTime());
       calendar.add(java.util.Calendar.DATE, 6);
       calendarComponent.setEndDate(calendar.getTime());
@@ -772,7 +745,6 @@ public class CalendarView extends GridLayout implements View {
     if (format instanceof Calendar.TimeFormat) {
       calFormat = (Calendar.TimeFormat) format;
     }
-
     calendarComponent.setTimeFormat(calFormat);
   }
 
@@ -847,11 +819,10 @@ public class CalendarView extends GridLayout implements View {
   private void handleRangeSelect(CalendarComponentEvents.RangeSelectEvent event) {
     Date start = event.getStart();
     Date end = event.getEnd();
-
-        /*
-         * If a range of dates is selected in monthly mode, we want it to end at
-         * the end of the last day.
-         */
+    /*
+     * If a range of dates is selected in monthly mode, we want it to end at
+     * the end of the last day.
+     */
     if (event.isMonthlyMode()) {
       end = getEndOfDay(calendar, end);
     }
@@ -905,7 +876,6 @@ public class CalendarView extends GridLayout implements View {
     });
     applyEventButton.addStyleName("primary");
     Button cancel = new Button("Cancel", new Button.ClickListener() {
-
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -914,7 +884,6 @@ public class CalendarView extends GridLayout implements View {
       }
     });
     deleteEventButton = new Button("Delete", new Button.ClickListener() {
-
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -924,7 +893,6 @@ public class CalendarView extends GridLayout implements View {
     });
     deleteEventButton.addStyleName("borderless");
     scheduleEventPopup.addCloseListener(new Window.CloseListener() {
-
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -943,7 +911,6 @@ public class CalendarView extends GridLayout implements View {
     buttons.setComponentAlignment(applyEventButton, Alignment.TOP_RIGHT);
     buttons.addComponent(cancel);
     layout.addComponent(buttons);
-
   }
 
   private void updateCalendarEventPopup(boolean newEvent) {
@@ -1017,8 +984,7 @@ public class CalendarView extends GridLayout implements View {
 
   @SuppressWarnings("unchecked")
   private BasicEvent getFormCalendarEvent() {
-    BeanItem<CalendarEvent> item = (BeanItem<CalendarEvent>) scheduleEventFieldGroup
-            .getItemDataSource();
+    BeanItem<CalendarEvent> item = (BeanItem<CalendarEvent>) scheduleEventFieldGroup.getItemDataSource();
     CalendarEvent event = item.getBean();
     return (BasicEvent) event;
   }
@@ -1053,9 +1019,7 @@ public class CalendarView extends GridLayout implements View {
     resetTime(false);
     currentMonthsFirstDate = calendar.getTime();
     calendarComponent.setStartDate(currentMonthsFirstDate);
-
     updateCaptionLabel();
-
     calendar.add(GregorianCalendar.MONTH, 1);
     calendar.add(GregorianCalendar.DATE, -1);
     resetCalendarTime(true);
@@ -1063,8 +1027,7 @@ public class CalendarView extends GridLayout implements View {
 
   private void rollWeek(int direction) {
     calendar.add(GregorianCalendar.WEEK_OF_YEAR, direction);
-    calendar.set(GregorianCalendar.DAY_OF_WEEK,
-            calendar.getFirstDayOfWeek());
+    calendar.set(GregorianCalendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
     resetCalendarTime(false);
     resetTime(true);
     calendar.add(GregorianCalendar.DATE, 6);
@@ -1080,8 +1043,7 @@ public class CalendarView extends GridLayout implements View {
   private void updateCaptionLabel() {
     DateFormatSymbols s = new DateFormatSymbols(getLocale());
     String month = s.getShortMonths()[calendar.get(GregorianCalendar.MONTH)];
-    captionLabel.setValue(month + " "
-            + calendar.get(GregorianCalendar.YEAR));
+    captionLabel.setValue(month + " " + calendar.get(GregorianCalendar.YEAR));
   }
 
   private CalendarTestEvent getNewEvent(String caption, Date start, Date end) {
@@ -1089,7 +1051,6 @@ public class CalendarView extends GridLayout implements View {
     event.setCaption(caption);
     event.setStart(start);
     event.setEnd(end);
-
     return event;
   }
 

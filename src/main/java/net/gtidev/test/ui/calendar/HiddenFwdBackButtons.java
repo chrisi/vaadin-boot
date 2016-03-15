@@ -30,32 +30,32 @@ import java.util.Locale;
 
 public class HiddenFwdBackButtons extends UI {
 
-    @SuppressWarnings("deprecation")
-    @Override
-    protected void init(VaadinRequest request) {
-        GridLayout content = new GridLayout(1, 2);
-        content.setSizeFull();
-        setContent(content);
+  @SuppressWarnings("deprecation")
+  @Override
+  protected void init(VaadinRequest request) {
+    GridLayout content = new GridLayout(1, 2);
+    content.setSizeFull();
+    setContent(content);
 
-        final Calendar calendar = new Calendar();
-        calendar.setLocale(new Locale("fi", "FI"));
+    final Calendar calendar = new Calendar();
+    calendar.setLocale(new Locale("fi", "FI"));
 
-        calendar.setSizeFull();
-        calendar.setStartDate(new Date(100, 1, 1));
-        calendar.setEndDate(new Date(100, 1, 7));
-        content.addComponent(calendar);
-        Button button = new Button("Hide forward and back buttons");
-        button.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                // This should hide the forward and back navigation buttons
-                calendar.setHandler((BackwardHandler) null);
-                calendar.setHandler((ForwardHandler) null);
-            }
-        });
-        content.addComponent(button);
+    calendar.setSizeFull();
+    calendar.setStartDate(new Date(100, 1, 1));
+    calendar.setEndDate(new Date(100, 1, 7));
+    content.addComponent(calendar);
+    Button button = new Button("Hide forward and back buttons");
+    button.addClickListener(new ClickListener() {
+      @Override
+      public void buttonClick(ClickEvent event) {
+        // This should hide the forward and back navigation buttons
+        calendar.setHandler((BackwardHandler) null);
+        calendar.setHandler((ForwardHandler) null);
+      }
+    });
+    content.addComponent(button);
 
-        content.setRowExpandRatio(0, 1);
+    content.setRowExpandRatio(0, 1);
 
-    }
+  }
 }
