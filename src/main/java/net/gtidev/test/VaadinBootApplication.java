@@ -1,6 +1,5 @@
 package net.gtidev.test;
 
-import com.vaadin.ui.components.calendar.event.BasicEventProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,11 +20,6 @@ public class VaadinBootApplication {
   @Bean
   public GregorianCalendar calendar() {
     return new GregorianCalendar();
-  }
-
-  @Bean
-  public BasicEventProvider eventProvider() {
-    return new BasicEventProvider();
   }
 
 }

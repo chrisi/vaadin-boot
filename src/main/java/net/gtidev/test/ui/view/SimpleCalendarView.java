@@ -5,7 +5,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Calendar;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.components.calendar.event.BasicEvent;
 
 import javax.annotation.PostConstruct;
 import java.util.GregorianCalendar;
@@ -33,19 +32,7 @@ public class SimpleCalendarView extends VerticalLayout implements View {
     calendar.setFirstVisibleHourOfDay(9);
     calendar.setLastVisibleHourOfDay(17);
 
-// Add a two-hour event
-    GregorianCalendar eventStart = new GregorianCalendar(2014, 0, 7, 13, 00, 00);
-    GregorianCalendar eventEnd = new GregorianCalendar(2014, 0, 7, 16, 00, 00);
-    calendar.addEvent(new BasicEvent("Calendar study", "Learning how to use Vaadin Calendar",
-            eventStart.getTime(), eventEnd.getTime()));
-
-// A two-day event
-    GregorianCalendar alldayStart = new GregorianCalendar(2014, 0, 8, 0, 00, 00);
-    GregorianCalendar alldayEnd = new GregorianCalendar(2014, 0, 9, 0, 00, 00);
-    BasicEvent allday = new BasicEvent("Study all day", "Study how to create all-day events",
-            alldayStart.getTime(), alldayEnd.getTime());
-    allday.setAllDay(true);
-    calendar.addEvent(allday);
+//TODO: Add Events
 
     addComponent(calendar);
   }

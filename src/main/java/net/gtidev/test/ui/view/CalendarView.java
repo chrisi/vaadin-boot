@@ -12,13 +12,11 @@ import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
-import com.vaadin.ui.components.calendar.event.BasicEvent;
-import com.vaadin.ui.components.calendar.event.BasicEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.ui.components.calendar.handler.BasicDateClickHandler;
 import com.vaadin.ui.components.calendar.handler.BasicWeekClickHandler;
 import com.vaadin.ui.themes.ValoTheme;
-import net.gtidev.test.CalendarEventManager;
+import net.gtidev.test.EventProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -39,10 +37,7 @@ public class CalendarView extends GridLayout implements View {
   private GregorianCalendar calendar;
 
   @Autowired
-  private BasicEventProvider dataSource;
-
-  @Autowired
-  private CalendarEventManager calendarEventManager;
+  private EventProvider eventProvider;
 
   private static final long serialVersionUID = -5436777475398410597L;
 
@@ -353,21 +348,15 @@ public class CalendarView extends GridLayout implements View {
     final TextArea descriptionField = createTextArea("Description");
     descriptionField.setInputPrompt("Describe the event");
     descriptionField.setRows(3);
-    // descriptionField.setRequired(true);
 
     final ComboBox styleNameField = createStyleNameComboBox();
     styleNameField.setInputPrompt("Choose calendar");
     styleNameField.setTextInputAllowed(false);
 
     formLayout.addComponent(startDateField);
-    // startDateField.setRequired(true);
     formLayout.addComponent(endDateField);
     formLayout.addComponent(allDayField);
     formLayout.addComponent(captionField);
-    // captionField.setComponentError(new UserError("Testing error"));
-    if (eventClass == MyCalendarEvent.class) {
-      formLayout.addComponent(whereField);
-    }
     formLayout.addComponent(descriptionField);
     formLayout.addComponent(styleNameField);
 
@@ -375,9 +364,6 @@ public class CalendarView extends GridLayout implements View {
     scheduleEventFieldGroup.bind(endDateField, "end");
     scheduleEventFieldGroup.bind(captionField, "caption");
     scheduleEventFieldGroup.bind(descriptionField, "description");
-    if (eventClass == MyCalendarEvent.class) {
-      scheduleEventFieldGroup.bind(whereField, "where");
-    }
     scheduleEventFieldGroup.bind(styleNameField, "styleName");
     scheduleEventFieldGroup.bind(allDayField, "allDay");
   }
@@ -426,7 +412,7 @@ public class CalendarView extends GridLayout implements View {
   }
 
   private void initCalendar() {
-    calendarComponent = new Calendar(dataSource);
+    calendarComponent = new Calendar(eventProvider);
     calendarComponent.setLocale(getLocale());
     calendarComponent.setImmediate(true);
 
@@ -828,7 +814,7 @@ public class CalendarView extends GridLayout implements View {
   }
 
   private CalendarEvent createNewEvent(Date startDate, Date endDate) {
-    BasicEvent event = new BasicEvent();
+    net.gtidev.test.model.Event event = new net.gtidev.test.model.Event();
     event.setCaption("");
     event.setStart(startDate);
     event.setEnd(endDate);
@@ -838,9 +824,9 @@ public class CalendarView extends GridLayout implements View {
 
   /* Removes the event from the data source and fires change event. */
   private void deleteCalendarEvent() {
-    BasicEvent event = getFormCalendarEvent();
-    if (dataSource.containsEvent(event)) {
-      dataSource.removeEvent(event);
+    net.gtidev.test.model.Event event = getFormCalendarEvent();
+    if (eventProvider.containsEvent(event)) {
+      eventProvider.removeEvent(event);
     }
     getUI().removeWindow(scheduleEventPopup);
   }
@@ -848,12 +834,12 @@ public class CalendarView extends GridLayout implements View {
   /* Adds/updates the event in the data source and fires change event. */
   private void commitCalendarEvent() throws FieldGroup.CommitException {
     scheduleEventFieldGroup.commit();
-    BasicEvent event = getFormCalendarEvent();
+    net.gtidev.test.model.Event event = getFormCalendarEvent();
     if (event.getEnd() == null) {
       event.setEnd(event.getStart());
     }
-    if (!dataSource.containsEvent(event)) {
-      dataSource.addEvent(event);
+    if (!eventProvider.containsEvent(event)) {
+      eventProvider.addEvent(event);
     }
 
     getUI().removeWindow(scheduleEventPopup);
@@ -865,10 +851,10 @@ public class CalendarView extends GridLayout implements View {
   }
 
   @SuppressWarnings("unchecked")
-  private BasicEvent getFormCalendarEvent() {
-    BeanItem<CalendarEvent> item = (BeanItem<CalendarEvent>) scheduleEventFieldGroup.getItemDataSource();
-    CalendarEvent event = item.getBean();
-    return (BasicEvent) event;
+  private net.gtidev.test.model.Event getFormCalendarEvent() {
+    BeanItem<net.gtidev.test.model.Event> item = (BeanItem<net.gtidev.test.model.Event>) scheduleEventFieldGroup.getItemDataSource();
+    net.gtidev.test.model.Event event = item.getBean();
+    return event;
   }
 
   private void nextMonth() {
