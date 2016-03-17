@@ -1,6 +1,5 @@
 package net.gtidev.test;
 
-import com.vaadin.ui.components.calendar.event.BasicEvent;
 import com.vaadin.ui.components.calendar.event.CalendarEditableEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
@@ -9,7 +8,6 @@ import net.gtidev.test.model.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,36 +23,21 @@ public class EventProvider implements CalendarEditableEventProvider,
 
   private List<EventSetChangeListener> listeners = new ArrayList<>();
 
-  @PostConstruct
-  public void init() {
-    List<Event> all = eventRepository.findAll();
-    all.forEach(this::addEvent);
-  }
-
   @Override
   public List<CalendarEvent> getEvents(Date startDate, Date endDate) {
-    ArrayList<CalendarEvent> activeEvents = new ArrayList<>();
-
-    for (CalendarEvent ev : eventList) {
-      long from = startDate.getTime();
-      long to = endDate.getTime();
-
-      if (ev.getStart() != null && ev.getEnd() != null) {
-        long f = ev.getStart().getTime();
-        long t = ev.getEnd().getTime();
-        // Select only events that overlaps with startDate and endDate.
-        if ((f <= to && f >= from) || (t >= from && t <= to)
-                || (f <= from && t >= to)) {
-          activeEvents.add(ev);
-        }
-      }
+    List<Event> events = eventRepository.findByStartBetweenAndEndBetween(startDate, endDate, startDate, endDate);
+    for (Event e : events) {
+      e.addEventChangeListener(this);
     }
-
-    return activeEvents;
+    List<CalendarEvent> calEvents = new ArrayList<>();
+    calEvents.addAll(events);
+    return calEvents;
   }
 
   public boolean containsEvent(Event event) {
-    return eventList.contains(event);
+    if (event.getId() == null)
+      return false;
+    return eventRepository.findOne(event.getId()) != null;
   }
 
   @Override
@@ -73,7 +56,6 @@ public class EventProvider implements CalendarEditableEventProvider,
    */
   private void fireEventSetChange() {
     EventSetChangeEvent event = new EventSetChangeEvent(this);
-
     for (EventSetChangeListener listener : listeners) {
       listener.eventSetChange(event);
     }
@@ -81,24 +63,29 @@ public class EventProvider implements CalendarEditableEventProvider,
 
   @Override
   public void eventChange(CalendarEvent.EventChangeEvent changeEvent) {
+    Event e = (Event) changeEvent.getCalendarEvent();
+    eventRepository.save(e);
     // naive implementation
     fireEventSetChange();
   }
 
   @Override
   public void addEvent(CalendarEvent event) {
-    eventList.add(event);
-    if (event instanceof BasicEvent) {
-      ((BasicEvent) event).addEventChangeListener(this);
+    if (event instanceof Event) {
+      Event e = (Event) event;
+      Event save = eventRepository.save(e);
+      e.setId(save.getId());
+      e.addEventChangeListener(this);
     }
     fireEventSetChange();
   }
 
   @Override
   public void removeEvent(CalendarEvent event) {
-    eventList.remove(event);
-    if (event instanceof BasicEvent) {
-      ((BasicEvent) event).removeEventChangeListener(this);
+    if (event instanceof Event) {
+      Event e = (Event) event;
+      eventRepository.delete(e);
+      e.removeEventChangeListener(this);
     }
     fireEventSetChange();
   }
