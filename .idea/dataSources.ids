@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="dataSourceStorage">
+  <data-source name="H2 - vaadin-boot" uuid="36f1e1c1-e12d-4ff3-b58b-fc737888deb6">
+    <database-info product="H2" version="1.4.191 (2016-01-21)" jdbc-version="4.0" driver-name="H2 JDBC Driver" driver-version="1.4.191 (2016-01-21)">
+      <identifier-quote-string>&quot;</identifier-quote-string>
+    </database-info>
+    <case-sensitivity plain-identifiers="upper" quoted-identifiers="exact"/>
+    <schema name="PUBLIC" catalog="VAADIN-BOOT"/>
+    <table name="CUSTOMER" schema="PUBLIC" catalog="VAADIN-BOOT" type="TABLE">
+      <column name="ID" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfQzUzRDAyMTZfNENGMl80RUIwX0FERjBfRjAzRDU4MDlEODVGKQ==" autoIncrement="true"/>
+      <column name="FIRST_NAME" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="LAST_NAME" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="CONSTRAINT_5" columns="ID"/>
+    </table>
+    <table name="EVENT" schema="PUBLIC" catalog="VAADIN-BOOT" type="TABLE">
+      <column name="ID" sqlType="BIGINT" precision="19" scale="0" nullable="false" jdbcType="-5" def="KE5FWFQgVkFMVUUgRk9SIFBVQkxJQy5TWVNURU1fU0VRVUVOQ0VfNTU0MjY4N0JfM0EzM180NkNBXzk2NThfRjcxNEZERkFDQzcyKQ==" autoIncrement="true"/>
+      <column name="ALL_DAY" sqlType="BOOLEAN" precision="1" scale="0" nullable="false" jdbcType="16"/>
+      <column name="CAPTION" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="DESCRIPTION" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <column name="END" sqlType="TIMESTAMP" precision="23" scale="10" nullable="true" jdbcType="93"/>
+      <column name="START" sqlType="TIMESTAMP" precision="23" scale="10" nullable="true" jdbcType="93"/>
+      <column name="STYLE_NAME" sqlType="VARCHAR" precision="255" scale="0" nullable="true" jdbcType="12"/>
+      <primary-key name="CONSTRAINT_3" columns="ID"/>
+    </table>
+  </data-source>
+</component>
