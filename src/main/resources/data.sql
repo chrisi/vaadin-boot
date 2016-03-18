@@ -1,21 +1,30 @@
-INSERT INTO event
-(caption, description, start, end, all_day, style_name)
-VALUES
-  ('Brunch', 'Dies ist ein Test', {ts '2016-03-17 10:00:00.00'}, {ts '2016-03-17 13:00:00.00'}, FALSE, 'color2');
+INSERT INTO PROJECT (NAME, DESCRIPTION, BILLABLE) VALUES ('Infolink', 'Wechselrichter', TRUE);
+INSERT INTO PROJECT (NAME, DESCRIPTION, BILLABLE) VALUES ('Captec', 'Cloud API', FALSE);
+INSERT INTO PROJECT (NAME, DESCRIPTION, BILLABLE) VALUES ('Digitron', 'DigiCAD', FALSE);
 
-INSERT INTO event
-(caption, description, start, end, all_day, style_name)
-VALUES
-  ('Welt', 'Noch einer', {ts '2016-03-15 12:00:00.00'}, {ts '2016-03-15 17:30:00.00'}, FALSE, 'color4');
+INSERT INTO CALENDAR (CAPTION, STYLE) VALUES ('Work','color1');
+INSERT INTO CALENDAR (CAPTION, STYLE) VALUES ('Personal','color2');
+INSERT INTO CALENDAR (CAPTION, STYLE) VALUES ('Family','color3');
+INSERT INTO CALENDAR (CAPTION, STYLE) VALUES ('Hobbies','color4');
 
-INSERT INTO event
-(caption, description, start, end, all_day, style_name)
+INSERT INTO EVENT
+(CAPTION, DESCRIPTION, START, END, ALL_DAY, STYLE_NAME, PROJECT_ID)
+VALUES
+  ('Brunch', 'Dies ist ein Test', {ts '2016-03-17 10:00:00.00'}, {ts '2016-03-17 13:00:00.00'}, FALSE, 'color2', 1);
+
+INSERT INTO EVENT
+(CAPTION, DESCRIPTION, START, END, ALL_DAY, STYLE_NAME, PROJECT_ID)
+VALUES
+  ('Welt', 'Noch einer', {ts '2016-03-15 12:00:00.00'}, {ts '2016-03-15 17:30:00.00'}, FALSE, 'color4', 2);
+
+INSERT INTO EVENT
+(CAPTION, DESCRIPTION, START, END, ALL_DAY, STYLE_NAME)
 VALUES
   ('All-day event', 'Some description', {ts '2016-03-14 00:00:00.00'}, {ts '2016-03-14 00:00:00.00'}, TRUE, 'color3');
 
-INSERT INTO Customer (first_name, last_name) VALUES ('Christian', 'Gebauer');
-INSERT INTO Customer (first_name, last_name) VALUES ('Jack', 'Bauer');
-INSERT INTO Customer (first_name, last_name) VALUES ('Chloe', 'O Brian');
-INSERT INTO Customer (first_name, last_name) VALUES ('Kim', 'Bauer');
-INSERT INTO Customer (first_name, last_name) VALUES ('David', 'Palmer');
-INSERT INTO Customer (first_name, last_name) VALUES ('Michelle', 'Dessler');
+INSERT INTO CUSTOMER (FIRST_NAME, LAST_NAME) VALUES ('Christian', 'Gebauer');
+INSERT INTO CUSTOMER (FIRST_NAME, LAST_NAME) VALUES ('Jack', 'Bauer');
+INSERT INTO CUSTOMER (FIRST_NAME, LAST_NAME) VALUES ('Chloe', 'O Brian');
+INSERT INTO CUSTOMER (FIRST_NAME, LAST_NAME) VALUES ('Kim', 'Bauer');
+INSERT INTO CUSTOMER (FIRST_NAME, LAST_NAME) VALUES ('David', 'Palmer');
+INSERT INTO CUSTOMER (FIRST_NAME, LAST_NAME) VALUES ('Michelle', 'Dessler');

@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    #url: jdbc:h2:mem:testdb
+    url: jdbc:h2:file:~/vaadin-boot;MODE=PostgreSQL;AUTO_SERVER=TRUE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+---
+
+spring:
+  profiles: https
+
+server:
+  port: 4443
+  ssl:
+    enabled: true
+    key-store: ${user.home}/.certs/localhost.jks
+    key-store-password: latrop
+    client-auth: need
+    trust-store: ${user.home}/.certs/calendar_clients.jks
+    trust-store-password: changeit
+
+---
+
+spring:
+  profiles: http
+
+server:
+  port: 9090

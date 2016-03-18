@@ -17,6 +17,7 @@ import com.vaadin.ui.components.calendar.handler.BasicDateClickHandler;
 import com.vaadin.ui.components.calendar.handler.BasicWeekClickHandler;
 import com.vaadin.ui.themes.ValoTheme;
 import net.gtidev.test.EventProvider;
+import net.gtidev.test.dbaccess.CalendarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -38,6 +39,9 @@ public class CalendarView extends GridLayout implements View {
 
   @Autowired
   private EventProvider eventProvider;
+
+  @Autowired
+  private CalendarRepository calendarRepository;
 
   private static final long serialVersionUID = -5436777475398410597L;
 
@@ -76,10 +80,7 @@ public class CalendarView extends GridLayout implements View {
 
   private CheckBox readOnlyButton;
 
-  private TextField captionField;
-
   private Window scheduleEventPopup;
-
   private final FormLayout scheduleEventFieldLayout = new FormLayout();
   private FieldGroup scheduleEventFieldGroup = new FieldGroup();
 
@@ -106,11 +107,6 @@ public class CalendarView extends GridLayout implements View {
   private Integer lastDay;
 
   private boolean showWeeklyView;
-
-  private boolean useSecondResolution;
-
-  private DateField startDateField;
-  private DateField endDateField;
 
   public CalendarView() {
     setSizeFull();
@@ -300,7 +296,7 @@ public class CalendarView extends GridLayout implements View {
     });
   }
 
-  public void initAddNewEventButton() {
+  private void initAddNewEventButton() {
     addNewEvent = new Button("Add new event");
     addNewEvent.addStyleName("primary");
     addNewEvent.addStyleName("small");
@@ -321,10 +317,10 @@ public class CalendarView extends GridLayout implements View {
 
   private void initFormFields(Layout formLayout, Class<? extends CalendarEvent> eventClass) {
 
-    startDateField = createDateField("Start date");
-    endDateField = createDateField("End date");
+    DateField startDateField = Utils.createDateField("Start date");
+    DateField endDateField = Utils.createDateField("End date");
 
-    final CheckBox allDayField = createCheckBox("All-day");
+    final CheckBox allDayField = Utils.createCheckBox("All-day");
     allDayField.addValueChangeListener(new Property.ValueChangeListener() {
       private static final long serialVersionUID = -7104996493482558021L;
 
@@ -332,24 +328,36 @@ public class CalendarView extends GridLayout implements View {
       public void valueChange(Property.ValueChangeEvent event) {
         Object value = event.getProperty().getValue();
         if (value instanceof Boolean && Boolean.TRUE.equals(value)) {
-          setFormDateResolution(Resolution.DAY);
+          if (startDateField != null && endDateField != null) {
+            startDateField.setResolution(Resolution.DAY);
+            endDateField.setResolution(Resolution.DAY);
+          }
         } else {
-          setFormDateResolution(Resolution.MINUTE);
+          if (startDateField != null && endDateField != null) {
+            startDateField.setResolution(Resolution.MINUTE);
+            endDateField.setResolution(Resolution.MINUTE);
+          }
         }
       }
 
     });
 
-    captionField = createTextField("Caption");
+    TextField captionField = Utils.createTextField("Caption");
     captionField.setInputPrompt("Event name");
     captionField.setRequired(true);
-    final TextField whereField = createTextField("Where");
+    final TextField whereField = Utils.createTextField("Where");
     whereField.setInputPrompt("Address or location");
-    final TextArea descriptionField = createTextArea("Description");
+    final TextArea descriptionField = Utils.createTextArea("Description");
     descriptionField.setInputPrompt("Describe the event");
     descriptionField.setRows(3);
 
-    final ComboBox styleNameField = createStyleNameComboBox();
+    final ComboBox styleNameField = Utils.createComboBox("Calendar", String.class, "c", "");
+    java.util.List<net.gtidev.test.model.Calendar> cals = calendarRepository.findAll();
+    for (net.gtidev.test.model.Calendar cal : cals) {
+      Item i = styleNameField.addItem(cal.getStyle());
+      i.getItemProperty("c").setValue(cal.getCaption());
+    }
+
     styleNameField.setInputPrompt("Choose calendar");
     styleNameField.setTextInputAllowed(false);
 
@@ -368,53 +376,12 @@ public class CalendarView extends GridLayout implements View {
     scheduleEventFieldGroup.bind(allDayField, "allDay");
   }
 
-  private CheckBox createCheckBox(String caption) {
-    CheckBox cb = new CheckBox(caption);
-    cb.setImmediate(true);
-    return cb;
-  }
-
-  private TextField createTextField(String caption) {
-    TextField f = new TextField(caption);
-    f.setNullRepresentation("");
-    return f;
-  }
-
-  private TextArea createTextArea(String caption) {
-    TextArea f = new TextArea(caption);
-    f.setNullRepresentation("");
-    return f;
-  }
-
-  private DateField createDateField(String caption) {
-    DateField f = new DateField(caption);
-    if (useSecondResolution) {
-      f.setResolution(Resolution.SECOND);
-    } else {
-      f.setResolution(Resolution.MINUTE);
-    }
-    return f;
-  }
-
-  private ComboBox createStyleNameComboBox() {
-    ComboBox s = new ComboBox("Calendar");
-    s.addContainerProperty("c", String.class, "");
-    s.setItemCaptionPropertyId("c");
-    Item i = s.addItem("color1");
-    i.getItemProperty("c").setValue("Work");
-    i = s.addItem("color2");
-    i.getItemProperty("c").setValue("Personal");
-    i = s.addItem("color3");
-    i.getItemProperty("c").setValue("Family");
-    i = s.addItem("color4");
-    i.getItemProperty("c").setValue("Hobbies");
-    return s;
-  }
-
   private void initCalendar() {
     calendarComponent = new Calendar(eventProvider);
     calendarComponent.setLocale(getLocale());
     calendarComponent.setImmediate(true);
+    calendarComponent.setFirstVisibleHourOfDay(6);
+    calendarComponent.setLastVisibleHourOfDay(22);
 
     if (calendarWidth != null || calendarHeight != null) {
       if (calendarHeight != null) {
@@ -705,8 +672,6 @@ public class CalendarView extends GridLayout implements View {
 
     updateCalendarEventPopup(newEvent);
     updateCalendarEventForm(event);
-    // TODO this only works the first time
-    captionField.focus();
 
     if (!getUI().getWindows().contains(scheduleEventPopup)) {
       getUI().addWindow(scheduleEventPopup);
@@ -804,13 +769,6 @@ public class CalendarView extends GridLayout implements View {
     initFormFields(scheduleEventFieldLayout, event.getClass());
     scheduleEventFieldGroup.setBuffered(true);
     scheduleEventFieldGroup.setItemDataSource(item);
-  }
-
-  private void setFormDateResolution(Resolution resolution) {
-    if (startDateField != null && endDateField != null) {
-      startDateField.setResolution(resolution);
-      endDateField.setResolution(resolution);
-    }
   }
 
   private CalendarEvent createNewEvent(Date startDate, Date endDate) {

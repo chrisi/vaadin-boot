@@ -2,23 +2,26 @@ package net.gtidev.test.model;
 
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.ui.components.calendar.event.EditableCalendarEvent;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@Data
-@EqualsAndHashCode(of = {"id"})
+@Getter
+@ToString
 public class Event implements EditableCalendarEvent, CalendarEvent.EventChangeNotifier {
 
   @Id
+  @Setter
   @GeneratedValue
   private Long id;
 
@@ -28,6 +31,8 @@ public class Event implements EditableCalendarEvent, CalendarEvent.EventChangeNo
   private Date start;
   private String styleName;
   private boolean allDay;
+  @ManyToOne
+  private Project project;
 
   private transient List<EventChangeListener> listeners = new ArrayList<>();
 
@@ -103,5 +108,9 @@ public class Event implements EditableCalendarEvent, CalendarEvent.EventChangeNo
   public void setAllDay(boolean allDay) {
     this.allDay = allDay;
     fireEventChange();
+  }
+
+  public void setProject(Project project) {
+    this.project = project;
   }
 }
