@@ -22,13 +22,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.text.DateFormatSymbols;
+import java.time.Duration;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
 @SpringView
-public class CalendarView extends GridLayout implements View {
+public class CalendarView extends GridLayout implements View, CalendarEventListener {
 
   /**
    * This Gregorian calendar is used to control dates and time inside of this
@@ -40,15 +41,12 @@ public class CalendarView extends GridLayout implements View {
   @Autowired
   private EventProvider eventProvider;
 
-  @Autowired
-  private CalendarRepository calendarRepository;
-
   private static final long serialVersionUID = -5436777475398410597L;
 
   private static final String DEFAULT_ITEMID = "DEFAULT";
 
   private enum Mode {
-    MONTH, WEEK, DAY;
+    MONTH, WEEK, DAY
   }
 
   /**
@@ -80,14 +78,6 @@ public class CalendarView extends GridLayout implements View {
 
   private CheckBox readOnlyButton;
 
-  private Window scheduleEventPopup;
-  private final FormLayout scheduleEventFieldLayout = new FormLayout();
-  private FieldGroup scheduleEventFieldGroup = new FieldGroup();
-
-  private Button deleteEventButton;
-
-  private Button applyEventButton;
-
   private Mode viewMode = Mode.WEEK;
 
   private Button addNewEvent;
@@ -108,6 +98,9 @@ public class CalendarView extends GridLayout implements View {
 
   private boolean showWeeklyView;
 
+  @Autowired
+  private EventEditorPopup eventEditorPopup;
+
   public CalendarView() {
     setSizeFull();
     setHeight("1000px");
@@ -117,6 +110,9 @@ public class CalendarView extends GridLayout implements View {
 
   @PostConstruct
   public void init() {
+
+    eventEditorPopup.setListener(this);
+
     setLocale(Locale.getDefault());
 
     // Initialize locale, timezone and timeformat selects.
@@ -306,74 +302,10 @@ public class CalendarView extends GridLayout implements View {
       @Override
       public void buttonClick(Button.ClickEvent event) {
         Date start = new Date();
-        start.setHours(0);
-        start.setMinutes(0);
-        start.setSeconds(0);
-        Date end = getEndOfDay(calendar, start);
-        showEventPopup(createNewEvent(start, end), true);
+        Date end = Date.from(start.toInstant().plus(Duration.ofHours(1)));
+        eventEditorPopup.showEventPopup(createNewEvent(start, end), true, calendarComponent.isReadOnly());
       }
     });
-  }
-
-  private void initFormFields(Layout formLayout, Class<? extends CalendarEvent> eventClass) {
-
-    DateField startDateField = Utils.createDateField("Start date");
-    DateField endDateField = Utils.createDateField("End date");
-
-    final CheckBox allDayField = Utils.createCheckBox("All-day");
-    allDayField.addValueChangeListener(new Property.ValueChangeListener() {
-      private static final long serialVersionUID = -7104996493482558021L;
-
-      @Override
-      public void valueChange(Property.ValueChangeEvent event) {
-        Object value = event.getProperty().getValue();
-        if (value instanceof Boolean && Boolean.TRUE.equals(value)) {
-          if (startDateField != null && endDateField != null) {
-            startDateField.setResolution(Resolution.DAY);
-            endDateField.setResolution(Resolution.DAY);
-          }
-        } else {
-          if (startDateField != null && endDateField != null) {
-            startDateField.setResolution(Resolution.MINUTE);
-            endDateField.setResolution(Resolution.MINUTE);
-          }
-        }
-      }
-
-    });
-
-    TextField captionField = Utils.createTextField("Caption");
-    captionField.setInputPrompt("Event name");
-    captionField.setRequired(true);
-    final TextField whereField = Utils.createTextField("Where");
-    whereField.setInputPrompt("Address or location");
-    final TextArea descriptionField = Utils.createTextArea("Description");
-    descriptionField.setInputPrompt("Describe the event");
-    descriptionField.setRows(3);
-
-    final ComboBox styleNameField = Utils.createComboBox("Calendar", String.class, "c", "");
-    java.util.List<net.gtidev.test.model.Calendar> cals = calendarRepository.findAll();
-    for (net.gtidev.test.model.Calendar cal : cals) {
-      Item i = styleNameField.addItem(cal.getStyle());
-      i.getItemProperty("c").setValue(cal.getCaption());
-    }
-
-    styleNameField.setInputPrompt("Choose calendar");
-    styleNameField.setTextInputAllowed(false);
-
-    formLayout.addComponent(startDateField);
-    formLayout.addComponent(endDateField);
-    formLayout.addComponent(allDayField);
-    formLayout.addComponent(captionField);
-    formLayout.addComponent(descriptionField);
-    formLayout.addComponent(styleNameField);
-
-    scheduleEventFieldGroup.bind(startDateField, "start");
-    scheduleEventFieldGroup.bind(endDateField, "end");
-    scheduleEventFieldGroup.bind(captionField, "caption");
-    scheduleEventFieldGroup.bind(descriptionField, "description");
-    scheduleEventFieldGroup.bind(styleNameField, "styleName");
-    scheduleEventFieldGroup.bind(allDayField, "allDay");
   }
 
   private void initCalendar() {
@@ -448,7 +380,7 @@ public class CalendarView extends GridLayout implements View {
     });
 
     calendarComponent.setHandler((CalendarComponentEvents.EventClickHandler) event -> {
-      showEventPopup(event.getCalendarEvent(), false);
+      eventEditorPopup.showEventPopup(event.getCalendarEvent(), false, calendarComponent.isReadOnly());
     });
 
     calendarComponent.setHandler(new BasicDateClickHandler() {
@@ -662,113 +594,7 @@ public class CalendarView extends GridLayout implements View {
       end = getEndOfDay(calendar, end);
     }
 
-    showEventPopup(createNewEvent(start, end), true);
-  }
-
-  private void showEventPopup(CalendarEvent event, boolean newEvent) {
-    if (event == null) {
-      return;
-    }
-
-    updateCalendarEventPopup(newEvent);
-    updateCalendarEventForm(event);
-
-    if (!getUI().getWindows().contains(scheduleEventPopup)) {
-      getUI().addWindow(scheduleEventPopup);
-    }
-
-  }
-
-  /* Initializes a modal window to edit schedule event. */
-  private void createCalendarEventPopup() {
-    VerticalLayout layout = new VerticalLayout();
-    // layout.setMargin(true);
-    layout.setSpacing(true);
-
-    scheduleEventPopup = new Window(null, layout);
-    scheduleEventPopup.setWidth("300px");
-    scheduleEventPopup.setModal(true);
-    scheduleEventPopup.center();
-
-    scheduleEventFieldLayout.addStyleName("light");
-    scheduleEventFieldLayout.setMargin(false);
-    layout.addComponent(scheduleEventFieldLayout);
-
-    applyEventButton = new Button("Apply", new Button.ClickListener() {
-
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void buttonClick(Button.ClickEvent event) {
-        try {
-          commitCalendarEvent();
-        } catch (FieldGroup.CommitException e) {
-          e.printStackTrace();
-        }
-      }
-    });
-    applyEventButton.addStyleName("primary");
-    Button cancel = new Button("Cancel", new Button.ClickListener() {
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void buttonClick(Button.ClickEvent event) {
-        discardCalendarEvent();
-      }
-    });
-    deleteEventButton = new Button("Delete", new Button.ClickListener() {
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void buttonClick(Button.ClickEvent event) {
-        deleteCalendarEvent();
-      }
-    });
-    deleteEventButton.addStyleName("borderless");
-    scheduleEventPopup.addCloseListener(new Window.CloseListener() {
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void windowClose(Window.CloseEvent e) {
-        discardCalendarEvent();
-      }
-    });
-
-    HorizontalLayout buttons = new HorizontalLayout();
-    buttons.addStyleName("v-window-bottom-toolbar");
-    buttons.setWidth("100%");
-    buttons.setSpacing(true);
-    buttons.addComponent(deleteEventButton);
-    buttons.addComponent(applyEventButton);
-    buttons.setExpandRatio(applyEventButton, 1);
-    buttons.setComponentAlignment(applyEventButton, Alignment.TOP_RIGHT);
-    buttons.addComponent(cancel);
-    layout.addComponent(buttons);
-  }
-
-  private void updateCalendarEventPopup(boolean newEvent) {
-    if (scheduleEventPopup == null) {
-      createCalendarEventPopup();
-    }
-
-    if (newEvent) {
-      scheduleEventPopup.setCaption("New event");
-    } else {
-      scheduleEventPopup.setCaption("Edit event");
-    }
-
-    deleteEventButton.setVisible(!newEvent);
-    deleteEventButton.setEnabled(!calendarComponent.isReadOnly());
-    applyEventButton.setEnabled(!calendarComponent.isReadOnly());
-  }
-
-  private void updateCalendarEventForm(CalendarEvent event) {
-    BeanItem<CalendarEvent> item = new BeanItem<>(event);
-    scheduleEventFieldLayout.removeAllComponents();
-    scheduleEventFieldGroup = new FieldGroup();
-    initFormFields(scheduleEventFieldLayout, event.getClass());
-    scheduleEventFieldGroup.setBuffered(true);
-    scheduleEventFieldGroup.setItemDataSource(item);
+    eventEditorPopup.showEventPopup(createNewEvent(start, end), true, calendarComponent.isReadOnly());
   }
 
   private CalendarEvent createNewEvent(Date startDate, Date endDate) {
@@ -781,17 +607,17 @@ public class CalendarView extends GridLayout implements View {
   }
 
   /* Removes the event from the data source and fires change event. */
-  private void deleteCalendarEvent() {
+  @Override
+  public void deleteCalendarEvent() {
     net.gtidev.test.model.Event event = getFormCalendarEvent();
     if (eventProvider.containsEvent(event)) {
       eventProvider.removeEvent(event);
     }
-    getUI().removeWindow(scheduleEventPopup);
   }
 
   /* Adds/updates the event in the data source and fires change event. */
-  private void commitCalendarEvent() throws FieldGroup.CommitException {
-    scheduleEventFieldGroup.commit();
+  @Override
+  public void commitCalendarEvent() {
     net.gtidev.test.model.Event event = getFormCalendarEvent();
     if (event.getEnd() == null) {
       event.setEnd(event.getStart());
@@ -799,20 +625,15 @@ public class CalendarView extends GridLayout implements View {
     if (!eventProvider.containsEvent(event)) {
       eventProvider.addEvent(event);
     }
-
-    getUI().removeWindow(scheduleEventPopup);
   }
 
-  private void discardCalendarEvent() {
-    scheduleEventFieldGroup.discard();
-    getUI().removeWindow(scheduleEventPopup);
+  @Override
+  public void discardCalendarEvent() {
   }
 
   @SuppressWarnings("unchecked")
   private net.gtidev.test.model.Event getFormCalendarEvent() {
-    BeanItem<net.gtidev.test.model.Event> item = (BeanItem<net.gtidev.test.model.Event>) scheduleEventFieldGroup.getItemDataSource();
-    net.gtidev.test.model.Event event = item.getBean();
-    return event;
+    return eventEditorPopup.getEvent();
   }
 
   private void nextMonth() {
@@ -877,8 +698,6 @@ public class CalendarView extends GridLayout implements View {
    */
   public void switchToWeekView() {
     viewMode = Mode.WEEK;
-    // weekButton.setVisible(false);
-    // monthButton.setVisible(true);
   }
 
   /*
@@ -887,8 +706,6 @@ public class CalendarView extends GridLayout implements View {
    */
   public void switchToMonthView() {
     viewMode = Mode.MONTH;
-    // monthButton.setVisible(false);
-    // weekButton.setVisible(false);
 
     int rollAmount = calendar.get(GregorianCalendar.DAY_OF_MONTH) - 1;
     calendar.add(GregorianCalendar.DAY_OF_MONTH, -rollAmount);
@@ -911,8 +728,6 @@ public class CalendarView extends GridLayout implements View {
    */
   public void switchToDayView() {
     viewMode = Mode.DAY;
-    // monthButton.setVisible(true);
-    // weekButton.setVisible(true);
   }
 
   private void resetCalendarTime(boolean resetEndTime) {
@@ -952,19 +767,6 @@ public class CalendarView extends GridLayout implements View {
     calendarClone.set(java.util.Calendar.MINUTE, calendarClone.getActualMaximum(java.util.Calendar.MINUTE));
     calendarClone.set(java.util.Calendar.HOUR, calendarClone.getActualMaximum(java.util.Calendar.HOUR));
     calendarClone.set(java.util.Calendar.HOUR_OF_DAY, calendarClone.getActualMaximum(java.util.Calendar.HOUR_OF_DAY));
-
-    return calendarClone.getTime();
-  }
-
-  private static Date getStartOfDay(java.util.Calendar calendar, Date date) {
-    java.util.Calendar calendarClone = (java.util.Calendar) calendar.clone();
-
-    calendarClone.setTime(date);
-    calendarClone.set(java.util.Calendar.MILLISECOND, 0);
-    calendarClone.set(java.util.Calendar.SECOND, 0);
-    calendarClone.set(java.util.Calendar.MINUTE, 0);
-    calendarClone.set(java.util.Calendar.HOUR, 0);
-    calendarClone.set(java.util.Calendar.HOUR_OF_DAY, 0);
 
     return calendarClone.getTime();
   }
