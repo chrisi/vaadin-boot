@@ -4,6 +4,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Calendar;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.VerticalLayout;
 
 import javax.annotation.PostConstruct;
@@ -11,15 +12,20 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 @SpringView(name = "simpleCal")
-public class SimpleCalendarView extends VerticalLayout implements View {
+public class SimpleCalendarView extends GridLayout implements View {
 
   @PostConstruct
   public void init() {
+    setSizeFull();
+    setHeight("1000px");
+    setWidth("1000px");
+    setMargin(true);
     setSpacing(true);
+
 // Create the calendar
     Calendar calendar = new Calendar("Simple Calendar");
-    calendar.setWidth("1000px");  // Undefined by default
-    calendar.setHeight("500px"); // Undefined by default
+    calendar.setWidth("800px");  // Undefined by default
+//    calendar.setHeight("500px"); // Undefined by default
 
 // Use US English for date/time representation
     calendar.setLocale(new Locale("en", "US"));

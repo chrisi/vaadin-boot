@@ -88,9 +88,9 @@ public class CalendarView extends GridLayout implements View, CalendarEventListe
 
   private CheckBox disabledButton;
 
-  private Integer firstHour;
+  private Integer firstHour = 6;
 
-  private Integer lastHour;
+  private Integer lastHour = 22;
 
   private Integer firstDay;
 
@@ -312,8 +312,6 @@ public class CalendarView extends GridLayout implements View, CalendarEventListe
     calendarComponent = new Calendar(eventProvider);
     calendarComponent.setLocale(getLocale());
     calendarComponent.setImmediate(true);
-    calendarComponent.setFirstVisibleHourOfDay(6);
-    calendarComponent.setLastVisibleHourOfDay(22);
 
     if (calendarWidth != null || calendarHeight != null) {
       if (calendarHeight != null) {
