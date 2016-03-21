@@ -2,8 +2,12 @@
 <project version="4">
   <component name="EclipseCodeFormatter">
     <option name="defaultSettings" value="true" />
-    <option name="id" value="1456730047832" />
+    <option name="id" value="1452075413212" />
+    <option name="importOrderConfigFilePath" value="$PROJECT_DIR$/../../tooling/formatting/eclipse/portal.importorder" />
+    <option name="importOrderFromFile" value="true" />
     <option name="name" value="default" />
+    <option name="pathToConfigFileJava" value="$PROJECT_DIR$/../../tooling/formatting/eclipse/portalformatter.xml" />
+    <option name="selectedJavaProfile" value="AirPlus" />
   </component>
   <component name="EntryPointsManager">
     <entry_points version="2.0" />

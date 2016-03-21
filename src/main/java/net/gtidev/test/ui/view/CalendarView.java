@@ -2,13 +2,10 @@ package net.gtidev.test.ui.view;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
-import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.data.util.BeanItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.combobox.FilteringMode;
-import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
@@ -17,7 +14,6 @@ import com.vaadin.ui.components.calendar.handler.BasicDateClickHandler;
 import com.vaadin.ui.components.calendar.handler.BasicWeekClickHandler;
 import com.vaadin.ui.themes.ValoTheme;
 import net.gtidev.test.EventProvider;
-import net.gtidev.test.dbaccess.CalendarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;

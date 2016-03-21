@@ -5,6 +5,7 @@ import com.vaadin.ui.components.calendar.event.EditableCalendarEvent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Entity
 @Getter
 @ToString
@@ -29,7 +31,6 @@ public class Event implements EditableCalendarEvent, CalendarEvent.EventChangeNo
   private String description;
   private Date end;
   private Date start;
-  private String styleName;
   private boolean allDay;
   @ManyToOne
   private Project project;
@@ -46,7 +47,6 @@ public class Event implements EditableCalendarEvent, CalendarEvent.EventChangeNo
     this.start = start;
     this.end = end;
     this.allDay = allDay;
-    this.styleName = styleName;
   }
 
   public Event(Long id, String caption, String description, Date start, double hours, String styleName) {
@@ -100,8 +100,7 @@ public class Event implements EditableCalendarEvent, CalendarEvent.EventChangeNo
 
   @Override
   public void setStyleName(String styleName) {
-    this.styleName = styleName;
-    fireEventChange();
+    log.error("method 'setSytle' is not implemented");
   }
 
   @Override
@@ -112,5 +111,11 @@ public class Event implements EditableCalendarEvent, CalendarEvent.EventChangeNo
 
   public void setProject(Project project) {
     this.project = project;
+    fireEventChange();
+  }
+
+  @Override
+  public String getStyleName() {
+    return project == null ? "color1" : project.getColor();
   }
 }

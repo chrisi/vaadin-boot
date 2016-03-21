@@ -1,6 +1,5 @@
 package net.gtidev.test.ui.view;
 
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
@@ -10,6 +9,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import lombok.Setter;
 import net.gtidev.test.dbaccess.CalendarRepository;
+import net.gtidev.test.dbaccess.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +19,9 @@ public class EventEditorPopup extends VerticalLayout {
 
   @Autowired
   private CalendarRepository calendarRepository;
+
+  @Autowired
+  private ProjectRepository projectRepository;
 
   private Window scheduleEventPopup;
   private final FormLayout scheduleEventFieldLayout = new FormLayout();
@@ -67,12 +70,8 @@ public class EventEditorPopup extends VerticalLayout {
     descriptionField.setInputPrompt("Describe the event");
     descriptionField.setRows(3);
 
-    final ComboBox styleNameField = Utils.createComboBox("Calendar", String.class, "c", "");
-    java.util.List<net.gtidev.test.model.Calendar> cals = calendarRepository.findAll();
-    for (net.gtidev.test.model.Calendar cal : cals) {
-      Item i = styleNameField.addItem(cal.getStyle());
-      i.getItemProperty("c").setValue(cal.getCaption());
-    }
+    final ComboBox styleNameField = Utils.createComboBox("Calendar", calendarRepository.findAll());
+    final ComboBox projectField = Utils.createObjectComboBox("Project", projectRepository.findAll());
 
     styleNameField.setInputPrompt("Choose calendar");
     styleNameField.setTextInputAllowed(false);
@@ -82,13 +81,13 @@ public class EventEditorPopup extends VerticalLayout {
     formLayout.addComponent(allDayField);
     formLayout.addComponent(captionField);
     formLayout.addComponent(descriptionField);
-    formLayout.addComponent(styleNameField);
+    formLayout.addComponent(projectField);
 
     scheduleEventFieldGroup.bind(startDateField, "start");
     scheduleEventFieldGroup.bind(endDateField, "end");
     scheduleEventFieldGroup.bind(captionField, "caption");
     scheduleEventFieldGroup.bind(descriptionField, "description");
-    scheduleEventFieldGroup.bind(styleNameField, "styleName");
+    scheduleEventFieldGroup.bind(projectField, "project");
     scheduleEventFieldGroup.bind(allDayField, "allDay");
   }
 
