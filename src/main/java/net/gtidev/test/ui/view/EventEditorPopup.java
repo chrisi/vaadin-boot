@@ -70,11 +70,10 @@ public class EventEditorPopup extends VerticalLayout {
     descriptionField.setInputPrompt("Describe the event");
     descriptionField.setRows(3);
 
-    final ComboBox styleNameField = Utils.createComboBox("Calendar", calendarRepository.findAll());
     final ComboBox projectField = Utils.createObjectComboBox("Project", projectRepository.findAll());
 
-    styleNameField.setInputPrompt("Choose calendar");
-    styleNameField.setTextInputAllowed(false);
+    projectField.setInputPrompt("Choose project");
+    projectField.setTextInputAllowed(true);
 
     formLayout.addComponent(startDateField);
     formLayout.addComponent(endDateField);
