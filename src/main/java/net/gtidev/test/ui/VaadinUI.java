@@ -1,6 +1,7 @@
 package net.gtidev.test.ui;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.data.Property;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
@@ -21,6 +22,7 @@ import java.util.Map;
 
 @SpringUI
 @Theme("tests-valo")
+@Widgetset("net.gtidev.test.components.GtiWidgetset")
 //@Theme("tests-valo-metro")
 //@Theme("tests-valo-reindeer")
 public class VaadinUI extends UI {

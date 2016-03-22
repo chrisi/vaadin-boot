@@ -84,7 +84,6 @@ public class AddressView extends VerticalLayout implements View {
 
   @Override
   public void enter(ViewChangeListener.ViewChangeEvent event) {
-
   }
 
 }

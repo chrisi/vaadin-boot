@@ -23,8 +23,13 @@
       <configuration>
         <setting name="additionalCompilerParameters" value="-Xss1024k" />
         <setting name="compilerMaxHeapSize" value="512" />
-        <setting name="gwtSdkUrl" value="file://C:\Users\Christian\.m2\repository/com/vaadin/vaadin-client/7.6.4" />
+        <setting name="gwtScriptOutputStyle" value="OBF" />
+        <setting name="gwtSdkUrl" value="file://C:\DEVTOOLS\repository/com/vaadin/vaadin-client/7.6.4" />
         <setting name="gwtSdkType" value="Vaadin-Maven" />
+        <packaging>
+          <module name="GtiWidgetset" enabled="false" />
+          <module name="net.gtidev.test.components.TestWidgetset" enabled="false" />
+        </packaging>
       </configuration>
     </facet>
   </component>
