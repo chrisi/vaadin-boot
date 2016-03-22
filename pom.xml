@@ -49,6 +49,24 @@
     </dependency>
 
     <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-client</artifactId>
+      <version>7.6.4</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>validation-api</artifactId>
+          <groupId>javax.validation</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-client-compiled</artifactId>
+      <version>7.6.4</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.16.6</version>
@@ -94,6 +112,78 @@
       <!--</execution>-->
       <!--</executions>-->
       <!--</plugin>-->
+
+      <!-- vaadin update widgetset step 1: need (re)build? -->
+      <!--<plugin>-->
+      <!--<groupId>com.vaadin</groupId>-->
+      <!--<artifactId>vaadin-maven-plugin</artifactId>-->
+      <!--<version>7.6.4</version>-->
+      <!--<configuration>-->
+      <!--<webappDirectory>${basedir}/resources/VAADIN/widgetsets</webappDirectory>-->
+      <!--<hostedWebapp>${basedir}/resources/VAADIN/widgetsets</hostedWebapp>-->
+      <!--<noServer>true</noServer>-->
+      <!--</configuration>-->
+      <!--<executions>-->
+      <!--<execution>-->
+      <!--<goals>-->
+      <!--<goal>update-widgetset</goal>-->
+      <!--</goals>-->
+      <!--</execution>-->
+      <!--</executions>-->
+      <!--</plugin>-->
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.vaadin</groupId>
+        <artifactId>vaadin-maven-plugin</artifactId>
+        <version>7.6.4</version>
+        <configuration>
+          <strict>true</strict>
+          <force>true</force>
+          <!-- Enable during development to speed compiling. -->
+          <!-- <draftCompile>true</draftCompile>
+          <style>DETAILED</style> -->
+          <!--<userAgents>ie8</userAgents>-->
+          <!-- <userAgents>gecko1_8</userAgents> -->
+          <!-- End development options -->
+          <!--<webappDirectory>src/main/webapp/VAADIN/widgetsets</webappDirectory>-->
+          <modules>
+            <module>net.gtidev.test.components.TestWidgetset</module>
+          </modules>
+        </configuration>
+      </plugin>
+
+      <!-- vaadin update widgetset part 2: compile -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>2.5.1</version>
+        <!--<configuration>-->
+        <!--<webappDirectory>src/main/webapp/VAADIN/widgetsets</webappDirectory>-->
+        <!--<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>-->
+        <!--<runTarget>clean</runTarget>-->
+        <!--<hostedWebapp>${project.build.directory}/${project.build.finalName}</hostedWebapp>-->
+        <!--<noServer>true</noServer>-->
+        <!--<port>8080</port>-->
+        <!--<soycDetailed>false</soycDetailed>-->
+        <!--</configuration>-->
+        <executions>
+          <execution>
+            <goals>
+              <goal>resources</goal>
+              <goal>compile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
 
     </plugins>
   </build>
