@@ -50,6 +50,6 @@ public class BarView extends VerticalLayout implements View, MemoryEventListener
 
   @Override
   public void valueChanged(int value) {
-    comp.setCaption("Hallo Welt: " + value);
+    comp.setValue(value);
   }
 }

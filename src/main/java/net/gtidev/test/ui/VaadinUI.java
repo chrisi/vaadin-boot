@@ -35,6 +35,7 @@ public class VaadinUI extends UI {
 
   @Override
   protected void init(VaadinRequest request) {
+    setPollInterval(5000);
     ValoMenuLayout root = new ValoMenuLayout();
     Navigator navigator = new Navigator(this, root.getContentContainer());
 

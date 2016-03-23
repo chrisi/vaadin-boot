@@ -1,8 +1,10 @@
 package net.gtidev.test.components.client.mycomponent;
 
-public class MyComponentState extends com.vaadin.shared.AbstractComponentState {
+import com.vaadin.shared.AbstractComponentState;
 
-	// TODO example state
-	public String text = "This is MyComponent";
+public class MyComponentState extends AbstractComponentState {
+
+  // TODO example state
+  public String text = "This is MyComponent";
 
 }
