@@ -12,7 +12,6 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-import net.gtidev.test.ui.view.BarView;
 import net.gtidev.test.ui.view.FooView;
 import net.gtidev.test.ui.view.IndexView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,7 @@ public class VaadinUI extends UI {
     navigator.addProvider(viewProvider); // fuer die SpringViews
     navigator.addView("index", IndexView.class);
     navigator.addView("foo", FooView.class);
-    navigator.addView("bar", BarView.class);
+    //navigator.addView("bar", BarView.class); wird nun ueber SpringView gezogen
 
     final String f = Page.getCurrent().getUriFragment();
     if (f == null || f.equals("")) {
