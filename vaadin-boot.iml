@@ -24,7 +24,7 @@
         <setting name="additionalCompilerParameters" value="-Xss1024k" />
         <setting name="compilerMaxHeapSize" value="512" />
         <setting name="gwtScriptOutputStyle" value="OBF" />
-        <setting name="gwtSdkUrl" value="file://C:\DEVTOOLS\repository/com/vaadin/vaadin-client/7.6.4" />
+        <setting name="gwtSdkUrl" value="file://C:\Users\Christian\.m2\repository/com/vaadin/vaadin-client/7.6.4" />
         <setting name="gwtSdkType" value="Vaadin-Maven" />
         <packaging>
           <module name="GtiWidgetset" enabled="false" />
@@ -44,6 +44,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: com.vaadin:vaadin-push:7.6.4" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin.external.atmosphere:atmosphere-runtime:2.2.7.vaadin1" level="project" />
+    <orderEntry type="library" name="Maven: com.vaadin.external.slf4j:vaadin-slf4j-jdk14:1.6.1" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-spring-boot-starter:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-spring-boot:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.vaadin:vaadin-spring:1.0.0" level="project" />

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="H2 - vaadin-boot" uuid="36f1e1c1-e12d-4ff3-b58b-fc737888deb6">
+      <secret-storage>master_key</secret-storage>
+      <user-name>sa</user-name>
+      <schema-pattern>VAADIN-BOOT.PUBLIC</schema-pattern>
+      <default-schemas>VAADIN-BOOT.PUBLIC</default-schemas>
+    </data-source>
+  </component>
+</project>
